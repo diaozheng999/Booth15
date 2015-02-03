@@ -1,0 +1,10 @@
+to update , use
+
+git add filename.extension
+
+git commit
+
+At this point, you will be prompted to write some commitmessage. After saving the textfile that popsup, you can use
+
+git push
+
