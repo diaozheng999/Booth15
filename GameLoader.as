@@ -45,13 +45,15 @@
 			var score = this.handler.score;
 	//		trace(score);
 			var playerName = this.handler.playerName;
-			this.handler.hiscores[playerName] = {key:playerName, value:score};
+			if ({key:playerName , value:score} in this.handler.hiscores) {
+				this.handler.hiscores.push({key:playerName,value:score});
+			}
+
 
 			
 			var text = "";
-			for each(var key in this.handler.hiscores){
-			//	trace(key.key, key.value.toString()); 
-				text = text + key.key + "," + key.value.toString() + "\n";
+			for each(var entry in this.handler.hiscores){
+				text = text + entry.key + "," + entry.value.toString() + "\n";
 			}
 			var fileloc : String = File.applicationDirectory.resolvePath("hiscores.txt").nativePath;
 			var file : File= new File(fileloc);
@@ -62,7 +64,7 @@
 		}
 		
 		public function readHiscores() : void {
-			this.handler.hiscores = new Object();
+			this.handler.hiscores = new Array();
 			var fileloc : String = File.applicationDirectory.resolvePath("hiscores.txt").nativePath;
 			var filename : File= new File(fileloc);
 			var filestream : FileStream = new FileStream();
@@ -77,7 +79,8 @@
 			for each(var line in fulltext.split("\n")) {
 				var nameandscore : Array = String(line).split(",");
 				if (nameandscore[0] != "") {
-					this.handler.hiscores[nameandscore[0]] = {key: nameandscore[0], value:int(nameandscore[1])};
+					this.handler.hiscores.push({key:nameandscore[0],value: nameandscore[1]});
+					//this.handler.hiscores[nameandscore[0]] = {key: nameandscore[0], value:int(nameandscore[1])};
 				}
 			}
 		//	for each(var key in this.handler.hiscores) {
