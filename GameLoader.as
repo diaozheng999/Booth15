@@ -43,16 +43,15 @@
 
 		public function writeHiscores() : void {
 			var score = this.handler.score;
-			trace(score);
+	//		trace(score);
 			var playerName = this.handler.playerName;
 			this.handler.hiscores[playerName] = {key:playerName, value:score};
 
 			
 			var text = "";
 			for each(var key in this.handler.hiscores){
-				trace(key.toString()); 
-				trace(this.handler.hiscores[key]);
-				text = text + key.key + "," + key.value + "\n";
+			//	trace(key.key, key.value.toString()); 
+				text = text + key.key + "," + key.value.toString() + "\n";
 			}
 			var fileloc : String = File.applicationDirectory.resolvePath("hiscores.txt").nativePath;
 			var file : File= new File(fileloc);
@@ -77,13 +76,14 @@
 			}
 			for each(var line in fulltext.split("\n")) {
 				var nameandscore : Array = String(line).split(",");
-				this.handler.hiscores[nameandscore[0]] = {key: nameandscore[0], value:int(nameandscore[1])};
-				
+				if (nameandscore[0] != "") {
+					this.handler.hiscores[nameandscore[0]] = {key: nameandscore[0], value:int(nameandscore[1])};
+				}
 			}
-			for each(var key in this.handler.hiscores) {
+		//	for each(var key in this.handler.hiscores) {
 				//var value:int = this.handler.hiscores[key];
-				trace(key.key+": "+key.value.toString());
-			}
+			//	trace(key.key+": "+key.value.toString());
+			//}
 		}
 			
 		
