@@ -16,6 +16,7 @@
 			this.addEventListener(Event.ENTER_FRAME, this.onEnterFrame);
 			this.birth = (new Date()).time;
 			this.harvestable = true;
+			
 		}
 		
 		public function onEnterFrame(e:Event){
