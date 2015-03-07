@@ -6,6 +6,8 @@
 	import flash.filesystem.FileMode;
 	import flash.filesystem.FileStream;
 	import flash.utils.Dictionary;
+	import flash.media.Sound;
+	import flash.media.SoundChannel;
 	
 	public class GameLoader {
 		
@@ -20,7 +22,13 @@
 		private var outputPin : Number = 13;
 		public var keyboardEmulators : String = "1234567890qwertyuiopasdfghjklzxcvbnm";
 		
+		public var bgMusic : Sound;
+		public var baobabSpawn : Sound;
+		public var baobabPop : Sound;
 		
+		
+		private var bgLooper : SoundChannel;
+	
 		public function GameLoader(handler : GameHandler) {
 			// constructor code
 			this.handler = handler;
@@ -34,6 +42,18 @@
 			this.loader.addEventListener(Event.COMPLETE, this.onFileLoadComplete);
 			this.loader.load(new URLRequest("baobabs.txt"));
 			readHiscores();
+			this.bgMusic = new Sound();
+			this.bgMusic.load(new URLRequest("audio/bgm.mp3"));
+			this.bgLooper = this.bgMusic.play(0);
+			this.bgLooper.addEventListener(Event.SOUND_COMPLETE, this.looperComplete);
+			this.baobabSpawn = new Sound();
+			this.baobabSpawn.load(new URLRequest("audio/splat.mp3"));
+			this.baobabPop = new Sound();
+			this.baobabPop.load(new URLRequest("audio/pop.mp3"));
+		}
+		
+		private function looperComplete(e:Event){
+			this.bgLooper = this.bgMusic.play();
 		}
 		
 		public function onArduinoLoadComplete(evt : Event){
