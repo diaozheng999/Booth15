@@ -1,3 +1,5 @@
-asd,123
-ase,234
+,0
 asf,32523
+ase,234
+asd,123
+Hello,0

@@ -62,7 +62,7 @@
 		public var playerName : String;
 		public var timer : Timer;
 		public var level : int;
-		public var hiscores : Dictionary;
+		public var hiscores : Object;
 		public var concurrent : int;
 		public var currTime : int;
 		public var baobabs : Vector.<Baobab>;
