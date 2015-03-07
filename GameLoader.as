@@ -20,6 +20,7 @@
 		
 		private var inputPin : Number = 8;
 		private var outputPin : Number = 13;
+		public var keyboardEmulators : String = "1234567890qwertyuiopasdfghjklzxcvbnm";
 		
 		
 		public function GameLoader(handler : GameHandler) {
@@ -46,7 +47,7 @@
 
 		public function writeHiscores(event: Event) : void {
 			var text = "";
-			for each(key in this.hiscores){
+			for each(var key in this.hiscores){
 				text = text + key.toString + "," + this.hiscores[key].toString + "\n";
 			}
 			var fileloc : String = File.applicationDirectory.resolvePath("hiscores.txt").nativePath;
@@ -63,12 +64,20 @@
 			var filestream : FileStream = new FileStream();
 			
 			filestream.open(filename, FileMode.READ);
-			var fulltext : String = filestream.readUTFBytes(1024);
+			
+			var fulltext : String = "";
+			
+			while(filestream.bytesAvailable!=0){
+				fulltext += filestream.readUTFBytes(1);
+			}
+			//filestream.readUTFBytes(1024);
 			for each(var line in fulltext) {
 				var nameandscore : Array = String(line).split(",");
 				this.hiscores[nameandscore[0]] = nameandscore[1];
-			}			
-			for each(key in this.hiscores) {
+			}
+			
+			this.hiscores
+			for each(var key in this.hiscores) {
 				trace(this.hiscores[key]);
 			}
 		}
