@@ -70,12 +70,15 @@
 		public var freePositions : int;
 		
 		public function getSpawnDelta(level:int):int{
-			trace("level", level,": delay", 3000 / ((level+1) * 2) );
+
 			//if level<10{
 			//	currTime = 1000 - int(level * 100);
 			//	return currTime;
 			//}
-			return 3000 / ((level+1) * 2) 
+			var num = Number(level)+ 3;
+			var delta = 3141.5926535 / Math.log(num);
+			trace("level", level,": delay", delta);
+			return int(delta);
 		}
 		public function getSpawnCount(level:int):int{
 			trace("level", level,": count",10 + int( 0.5 * level * level));
