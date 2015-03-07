@@ -4,16 +4,22 @@
 	import flash.events.Event;
 	import flash.utils.Timer;
 	import flash.events.TimerEvent;
+	import flash.events.KeyboardEvent;
 	
 	public class GameHandler {
 		
 		private var stage : Stage;
 		private var arduino : Arduino;
 		private var loader : GameLoader;
+		private var overlay : Overlay;
+		private var overlayWrapper : MovieClip;
+		private var gameWrapper : MovieClip;
 
-		public function GameHandler(stage:Stage) {
+		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip) {
 			// constructor code
 			this.stage = stage;
+			this.overlayWrapper = or;
+			this.gameWrapper = gr;
 		}
 		
 		public function run() : void{
@@ -69,21 +75,24 @@
 		
 		public function startGame():void{
 			//adds event listeners
-			/*this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.printBtn);
+			this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.printBtn);
 			this.arduino.addEventListener(ArduinoInputEvent.BTN_OFF, this.printBtn);
 			this.timer = new Timer(this.getSpawnDelta(0), this.getSpawnCount(0));
 			this.timer.addEventListener(TimerEvent.TIMER, this.onTimerFired);
 			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
 			this.timer.start();
 			this.score = 0;
-			this.concurrent = 1;*/
+			this.concurrent = 1;
 			
-			for each(var pos:Coordinate in this.loader.baobabPositions){
-				var n:Calibrator = new Calibrator();
-				n.x = pos.x;
-				n.y = pos.y;
-				this.stage.addChild(n);
-			}
+			this.overlay = new Overlay(this.loader);
+			
+			this.overlayWrapper.addChild(this.overlay);
+			
+			this.stage.addEventListener(KeyboardEvent.KEY_UP, this.handleKeypress);
+		}
+		
+		public function handleKeypress(e:KeyboardEvent){
+			this.overlay.handleKeypress(e);
 		}
 		
 		public function random(min:int, max:int):int{
@@ -98,7 +107,7 @@
 			var baobab : Baobab = new Baobab(25000);
 			baobab.x = pos.x;
 			baobab.y = pos.y;
-			this.stage.addChild(baobab);
+			this.gameWrapper.addChild(baobab);
 		}
 		
 		public function onTimerComplete(e:TimerEvent):void{
