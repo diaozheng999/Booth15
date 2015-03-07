@@ -12,12 +12,10 @@
 		private var handler : GameHandler;
 		private var loader : URLLoader;
 		public var arduino : Arduino;
-		public var hiscores : Dictionary;
+		public var currscore : int;
 		public var baobabPositions : Vector.<Coordinate>;
 		private var readiness : Number = 0;
 
-		
-		
 		private var inputPin : Number = 8;
 		private var outputPin : Number = 13;
 		public var keyboardEmulators : String = "1234567890qwertyuiopasdfghjklzxcvbnm";
@@ -26,9 +24,6 @@
 		public function GameLoader(handler : GameHandler) {
 			// constructor code
 			this.handler = handler;
-			
-			this.hiscores = new Dictionary();
-			
 			trace("Loading arduino...");
 			this.arduino = new Arduino(5331);
 			this.arduino.addEventListener(Event.CONNECT, this.onArduinoLoadComplete);
@@ -38,17 +33,26 @@
 			this.loader = new URLLoader();
 			this.loader.addEventListener(Event.COMPLETE, this.onFileLoadComplete);
 			this.loader.load(new URLRequest("baobabs.txt"));
+			readHiscores();
 		}
-		
 		
 		public function onArduinoLoadComplete(evt : Event){
 			this.getReady(1);
 		}
+		
 
-		public function writeHiscores(event: Event) : void {
+		public function writeHiscores() : void {
+			var score = this.handler.score;
+			trace(score);
+			var playerName = this.handler.playerName;
+			this.handler.hiscores[playerName] = score;
+			this.handler.hiscores["Test"] = 42;
+			
 			var text = "";
-			for each(var key in this.hiscores){
-				text = text + key.toString + "," + this.hiscores[key].toString + "\n";
+			for each(var key in this.handler.hiscores){
+				trace(key.toString); 
+				trace(this.handler.hiscores[key]);
+				text = text + key.toString + "," + this.handler.hiscores[key].toString + "\n";
 			}
 			var fileloc : String = File.applicationDirectory.resolvePath("hiscores.txt").nativePath;
 			var file : File= new File(fileloc);
@@ -58,7 +62,8 @@
 			stream.close();
 		}
 		
-		public function readHiscores(event: Event) : void {
+		public function readHiscores() : void {
+			this.handler.hiscores = new Dictionary();
 			var fileloc : String = File.applicationDirectory.resolvePath("hiscores.txt").nativePath;
 			var filename : File= new File(fileloc);
 			var filestream : FileStream = new FileStream();
@@ -70,15 +75,13 @@
 			while(filestream.bytesAvailable!=0){
 				fulltext += filestream.readUTFBytes(1);
 			}
-			//filestream.readUTFBytes(1024);
-			for each(var line in fulltext) {
+			for each(var line in fulltext.split("\n")) {
 				var nameandscore : Array = String(line).split(",");
-				this.hiscores[nameandscore[0]] = nameandscore[1];
+				this.handler.hiscores[nameandscore[0]] = nameandscore[1];
 			}
-			
-			this.hiscores
-			for each(var key in this.hiscores) {
-				trace(this.hiscores[key]);
+			for each(var key: String in this.handler.hiscores) {
+				var value:int = this.handler.hiscores[key];
+				trace(value);
 			}
 		}
 			
@@ -91,7 +94,7 @@
 				this.baobabPositions.push(new Coordinate(Number(coordinates[0]),Number(coordinates[1])));
 			}
 			trace(this.baobabPositions);
-			readHiscores(evt);
+			readHiscores();
 			this.getReady(2);
 			
 		}

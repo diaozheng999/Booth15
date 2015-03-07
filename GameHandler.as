@@ -6,6 +6,7 @@
 	import flash.events.TimerEvent;
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
+	import flash.utils.Dictionary;
 	
 	public class GameHandler {
 		
@@ -57,14 +58,15 @@
 			trace(e.type, e.trigger);
 		}
 		
-		private var score : uint;
-		private var playerName : String;
-		private var timer : Timer;
-		private var level : int;
-		private var concurrent : int;
-		private var currTime : int;
-		private var baobabs : Vector.<Baobab>;
-		private var freePositions : int;
+		public var score : uint;
+		public var playerName : String;
+		public var timer : Timer;
+		public var level : int;
+		public var hiscores : Dictionary;
+		public var concurrent : int;
+		public var currTime : int;
+		public var baobabs : Vector.<Baobab>;
+		public var freePositions : int;
 		
 		public function getSpawnDelta(level:int):int{
 			trace("level", level,": delay", 3000 / ((level+1) * 2) );
@@ -89,6 +91,8 @@
 			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
 			this.timer.start();
 			this.score = 0;
+			this.playerName = "Hello";
+			trace("Player name is..", this.playerName);
 			this.freePositions = this.loader.baobabPositions.length;
 			this.concurrent = 1;
 			
@@ -147,8 +151,10 @@
 			this.timer.start();
 		}
 		
-		public function gameOver(){
+		public function gameOver(){			
 			trace("Die liao lah!");
+			this.loader.writeHiscores();
+			
 		}
 	}
 }
