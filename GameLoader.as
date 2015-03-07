@@ -9,7 +9,7 @@
 	
 	public class GameLoader {
 		
-		private var handler : GameHandler;
+		public var handler : GameHandler;
 		private var loader : URLLoader;
 		public var arduino : Arduino;
 		public var currscore : int;

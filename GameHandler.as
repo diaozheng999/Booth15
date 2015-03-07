@@ -66,6 +66,7 @@
 		public var concurrent : int;
 		public var currTime : int;
 		public var baobabs : Vector.<Baobab>;
+		public var indicators : Vector.<Indicator>;
 		public var freePositions : int;
 		
 		public function getSpawnDelta(level:int):int{
@@ -98,9 +99,11 @@
 			
 			
 			this.baobabs = new Vector.<Baobab>();
+			this.indicators = new Vector.<Indicator>();
 			
 			this.loader.baobabPositions.forEach(function(a,b,c){
 				this.baobabs.push(null);
+				this.indicators.push(null);
 			}, this);
 			trace(this.baobabs);
 			this.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyRelease);
@@ -149,6 +152,53 @@
 			this.timer.addEventListener(TimerEvent.TIMER, this.onTimerFired);
 			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
 			this.timer.start();
+		}
+		
+		public function onBaobabActuation(id:int){
+			var indicator:Indicator = new Indicator();
+			var pos = this.loader.baobabPositions[id];
+			indicator.x = pos.x;
+			indicator.y = pos.y;
+			this.overlayWrapper.addChild(indicator);
+			this.indicators[id] = indicator;
+			if(this.baobabs[id]!=null){
+				this.baobabs[id];
+				indicator.addEventListener(Event.COMPLETE, this.onIndicatorAnimationComplete(id));
+			}else{
+				indicator.gotoAndPlay(80);
+			}
+			
+		}
+		
+		public function onIndicatorAnimationComplete(id:int){
+			var me = this;
+			return function (e:Event){
+				me.onBaobabDeactuation(id);
+			}
+		}
+		
+		public function onBaobabDeactuation(id:int){
+			if(this.indicators[id]!=null){
+				if(this.indicators[id].parent!=null){
+					this.indicators[id].stop();
+					this.overlayWrapper.removeChild(this.indicators[id]);
+					if(this.indicators[id].animationComplete && this.baobabs[id]!=null){
+						this.removeBaobab(id);
+					}
+				}else if(this.baobabs[id]!=null){
+					this.removeBaobab(id);
+				}
+				this.indicators[id]=null;
+			}
+		}
+		
+		public function removeBaobab(id:int){
+			trace("BAOBABBBB I HATE YOU!!!");
+			if(this.baobabs[id]!=null){
+				this.gameWrapper.removeChild(this.baobabs[id]);
+				this.baobabs[id]= null;
+				this.freePositions++;
+			}
 		}
 		
 		public function gameOver(){			

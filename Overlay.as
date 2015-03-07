@@ -8,7 +8,7 @@
 		private var calibrators : Vector.<Calibrator>;
 		private var activated : Boolean;
 		private var inputLength : int;
-		
+		private var activeSet : Object;
 		public function Overlay(loader:GameLoader) {
 			// constructor code
 			this.x = 0;
@@ -18,7 +18,7 @@
 			this.activated = false;
 			this.inputLength = Math.min(this.loader.keyboardEmulators.length, this.loader.baobabPositions.length);
 			this.calibrators = new Vector.<Calibrator>();
-			
+			this.activeSet = new Object();
 			
 			for (var i:int=0; i<this.loader.baobabPositions.length; i++){
 				var n:Calibrator = new Calibrator(i,this.loader, this.loader.keyboardEmulators.charAt(i));
@@ -30,16 +30,20 @@
 		}
 		
 		public function handleKeyDown(e:KeyboardEvent):void{
+			trace("keydown!!!");
 			if(this.activated){
 				for(var i=0;i<this.inputLength;i++){
-					if(e.charCode == this.loader.keyboardEmulators.charCodeAt(i)){
+					if(e.charCode == this.loader.keyboardEmulators.charCodeAt(i) && !this.activeSet.hasOwnProperty(i)){
 						this.calibrators[i].actuate();
+						this.loader.handler.onBaobabActuation(i);
+						this.activeSet[i] = true;
 					}
 				}
 			}
 		}
 		
 		public function handleKeyUp(e:KeyboardEvent):void{
+			trace("keyup!!!");
 			if(e.keyCode==86 && e.ctrlKey){
 				if(this.activated){
 					this.deactivate();
@@ -53,6 +57,8 @@
 				for(var i=0;i<this.inputLength;i++){
 					if(e.charCode == this.loader.keyboardEmulators.charCodeAt(i)){
 						this.calibrators[i].deactuate();
+						this.loader.handler.onBaobabDeactuation(i);
+						delete this.activeSet[i];
 					}
 				}
 			}
