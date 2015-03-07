@@ -7,16 +7,19 @@
 		private var loader : GameLoader;
 		private var calibrators : Vector.<Calibrator>;
 		private var activated : Boolean;
+		
+		
 		public function Overlay(loader:GameLoader) {
 			// constructor code
 			this.x = 0;
 			this.y = 0;
+			this.alpha = 0;
 			this.loader = loader;
 			this.activated = false;
 			
 			this.calibrators = new Vector.<Calibrator>();
 			
-			trace("boo");
+			
 			for (var i:int=0; i<this.loader.baobabPositions.length; i++){
 				var n:Calibrator = new Calibrator(i,this.loader);
 				n.x = this.loader.baobabPositions[i].x;

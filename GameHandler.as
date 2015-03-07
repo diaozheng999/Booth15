@@ -14,12 +14,15 @@
 		private var overlay : Overlay;
 		private var overlayWrapper : MovieClip;
 		private var gameWrapper : MovieClip;
+		private var keyboardEmulators : String;
 
 		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip) {
 			// constructor code
 			this.stage = stage;
 			this.overlayWrapper = or;
 			this.gameWrapper = gr;
+			
+			this.keyboardEmulators = "1234567890qwertyuiopasdfghjklzxcvbnm";
 		}
 		
 		public function run() : void{
@@ -46,6 +49,8 @@
 		public function onLoaderComplete():void{
 			trace("DONE!");
 			this.arduino = this.loader.arduino;
+			this.overlay = new Overlay(this.loader);
+			this.overlayWrapper.addChild(this.overlay);
 			this.startGame();
 		}
 		
@@ -58,6 +63,8 @@
 		private var level : int;
 		private var concurrent : int;
 		private var currTime : int;
+		private var baobabs : Vector.<Baobab>;
+		private var freePositions : int;
 		
 		public function getSpawnDelta(level:int):int{
 			trace("level", level,": delay", 3000 / ((level+1) * 2) );
@@ -82,12 +89,16 @@
 			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
 			this.timer.start();
 			this.score = 0;
+			this.freePositions = this.loader.baobabPositions.length;
 			this.concurrent = 1;
 			
-			this.overlay = new Overlay(this.loader);
 			
-			this.overlayWrapper.addChild(this.overlay);
+			this.baobabs = new Vector.<Baobab>();
 			
+			this.loader.baobabPositions.forEach(function(a,b,c){
+				this.baobabs.push(null);
+			}, this);
+			trace(this.baobabs);
 			this.stage.addEventListener(KeyboardEvent.KEY_UP, this.handleKeypress);
 		}
 		
@@ -102,12 +113,22 @@
 		public function onTimerFired(e:TimerEvent):void{
 			trace("Planting baobab.", this.timer.currentCount);
 			//var t:Baobab = new Baobab();
-			var pos : Coordinate = this.loader.baobabPositions[this.random(0,this.loader.baobabPositions.length-1)];
+			var bpos : int = this.random(0,this.loader.baobabPositions.length-1);
+			if(this.freePositions>0){
+				while(this.baobabs[bpos]!=null){
+					bpos = this.random(0,this.loader.baobabPositions.length-1);
+				}
+			}else{
+				this.gameOver();
+			}
+			var pos : Coordinate = this.loader.baobabPositions[bpos];
 			
 			var baobab : Baobab = new Baobab(25000);
 			baobab.x = pos.x;
 			baobab.y = pos.y;
+			this.baobabs[bpos] = baobab;
 			this.gameWrapper.addChild(baobab);
+			this.freePositions--;
 		}
 		
 		public function onTimerComplete(e:TimerEvent):void{
@@ -121,5 +142,8 @@
 			this.timer.start();
 		}
 		
+		public function gameOver(){
+			trace("Die liao lah!");
+		}
 	}
 }
