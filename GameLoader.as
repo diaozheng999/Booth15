@@ -16,6 +16,7 @@
 		public var arduino : Arduino;
 		public var currscore : int;
 		public var baobabPositions : Vector.<Coordinate>;
+		public var baobabZBuffer : Object;
 		private var readiness : Number = 0;
 
 		private var inputPin : Number = 8;
@@ -112,12 +113,26 @@
 		
 		public function onFileLoadComplete(evt : Event){
 			var data : Array = String(this.loader.data).split("\n");
+			var zbuf : Array = new Array();
+			this.baobabZBuffer = new Object();
 			this.baobabPositions = new Vector.<Coordinate>();
 			for each(var line in data){
 				var coordinates : Array = String(line).split(",");
 				this.baobabPositions.push(new Coordinate(Number(coordinates[0]),Number(coordinates[1])));
 			}
 			trace(this.baobabPositions);
+			for(var i=0;i<this.baobabPositions.length;i++){
+				zbuf.push({key:i,val:this.baobabPositions[i].y});
+			}
+			zbuf.sortOn("val", Array.NUMERIC);
+			
+			for(var i=0;i<zbuf.length;i++){
+				baobabZBuffer[zbuf[i].key] = i;
+				trace(i);
+			}
+
+			
+			
 			readHiscores();
 			this.getReady(2);
 			

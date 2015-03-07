@@ -36,6 +36,10 @@
 				this.gotoAndStop(frm);
 			}
 		}
+		
+		public function frame50(){
+			trace("howdy");
+		}
 	}
 	
 }
