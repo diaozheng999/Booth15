@@ -55,6 +55,7 @@
 		
 		private function looperComplete(e:Event){
 			this.bgLooper = this.bgMusic.play();
+			this.bgLooper.addEventListener(Event.SOUND_COMPLETE, this.looperComplete);
 		}
 		
 		public function onArduinoLoadComplete(evt : Event){

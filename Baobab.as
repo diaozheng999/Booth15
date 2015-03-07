@@ -37,9 +37,11 @@
 			}
 		}
 		
-		public function frame50(){
-			trace("howdy");
+		public function deplant(){
+			this.removeEventListener(Event.ENTER_FRAME, this.onEnterFrame);
+			this.gotoAndPlay(30);
 		}
+		
 	}
 	
 }

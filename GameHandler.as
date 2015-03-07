@@ -138,11 +138,12 @@
 			}
 			var pos : Coordinate = this.loader.baobabPositions[bpos];
 			
+			this.loader.baobabSpawn.play();
 			var baobab : Baobab = new Baobab(25000);
 			baobab.x = pos.x;
 			baobab.y = pos.y;
 			this.baobabs[bpos] = baobab;
-			this.gameWrapper.addChild(baobab);
+			this.gameWrapper.addChildAt(baobab, this.loader.baobabZBuffer[pos]);
 			this.freePositions--;
 		}
 		
@@ -198,7 +199,9 @@
 		public function removeBaobab(id:int){
 			trace("BAOBABBBB I HATE YOU!!!");
 			if(this.baobabs[id]!=null){
-				this.gameWrapper.removeChild(this.baobabs[id]);
+				this.loader.baobabPop.play();
+				//this.gameWrapper.removeChild(this.baobabs[id]);
+				this.baobabs[id].deplant();
 				this.baobabs[id]= null;
 				this.freePositions++;
 			}
