@@ -5,6 +5,7 @@
 	import flash.utils.Timer;
 	import flash.events.TimerEvent;
 	import flash.events.KeyboardEvent;
+	import flash.ui.Keyboard;
 	
 	public class GameHandler {
 		
@@ -14,7 +15,6 @@
 		private var overlay : Overlay;
 		private var overlayWrapper : MovieClip;
 		private var gameWrapper : MovieClip;
-		private var keyboardEmulators : String;
 
 		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip) {
 			// constructor code
@@ -22,7 +22,6 @@
 			this.overlayWrapper = or;
 			this.gameWrapper = gr;
 			
-			this.keyboardEmulators = "1234567890qwertyuiopasdfghjklzxcvbnm";
 		}
 		
 		public function run() : void{
@@ -59,6 +58,7 @@
 		}
 		
 		private var score : uint;
+		private var playerName : String;
 		private var timer : Timer;
 		private var level : int;
 		private var concurrent : int;
@@ -99,11 +99,16 @@
 				this.baobabs.push(null);
 			}, this);
 			trace(this.baobabs);
-			this.stage.addEventListener(KeyboardEvent.KEY_UP, this.handleKeypress);
+			this.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyRelease);
+			this.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyPress);
 		}
 		
-		public function handleKeypress(e:KeyboardEvent){
-			this.overlay.handleKeypress(e);
+		public function onKeyPress(e:KeyboardEvent){
+			this.overlay.handleKeyDown(e);
+		}
+		
+		public function onKeyRelease(e:KeyboardEvent){
+			this.overlay.handleKeyUp(e);
 		}
 		
 		public function random(min:int, max:int):int{
