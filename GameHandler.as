@@ -69,14 +69,21 @@
 		
 		public function startGame():void{
 			//adds event listeners
-			this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.printBtn);
+			/*this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.printBtn);
 			this.arduino.addEventListener(ArduinoInputEvent.BTN_OFF, this.printBtn);
 			this.timer = new Timer(this.getSpawnDelta(0), this.getSpawnCount(0));
 			this.timer.addEventListener(TimerEvent.TIMER, this.onTimerFired);
 			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
 			this.timer.start();
 			this.score = 0;
-			this.concurrent = 1;
+			this.concurrent = 1;*/
+			
+			for each(var pos:Coordinate in this.loader.baobabPositions){
+				var n:Calibrator = new Calibrator();
+				n.x = pos.x;
+				n.y = pos.y;
+				this.stage.addChild(n);
+			}
 		}
 		
 		public function random(min:int, max:int):int{
