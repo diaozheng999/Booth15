@@ -59,6 +59,8 @@
 		}
 		
 		public var score : uint;
+		public var multiplier : uint;
+		public var tonextmult : uint;
 		public var playerName : String;
 		public var timer : Timer;
 		public var level : int;
@@ -81,8 +83,8 @@
 			return int(delta);
 		}
 		public function getSpawnCount(level:int):int{
-			trace("level", level,": count",10 + int( 0.5 * level * level));
-			return 10 + int( 0.5 * level * level);
+			trace("level", level,": count",3 + int( 0.5 * level ));
+			return 3 + int( 0.5 * level);
 		}
 		
 		
@@ -95,6 +97,8 @@
 			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
 			this.timer.start();
 			this.score = 0;
+			this.multiplier = 1;
+			this.tonextmult = 5;
 			this.playerName = "Hello";
 			trace("Player name is..", this.playerName);
 			this.freePositions = this.loader.baobabPositions.length;
@@ -147,6 +151,19 @@
 			this.freePositions--;
 		}
 		
+		public function incrementScore(id : int) {
+			var value: int = int (1 +(25 - this.baobabs[id].currentFrame) / 5 );
+			this.score = this.score+ value * this.multiplier;
+		}
+		public function incrementMult() {
+			this.multiplier++;
+			this.tonextmult =5;
+		}
+		
+		public function resetMultiplier() {
+			this.multiplier = 1;
+		}
+		
 		public function onTimerComplete(e:TimerEvent):void{
 			trace("Done.");
 			this.level++;
@@ -165,11 +182,12 @@
 			indicator.y = pos.y;
 			this.overlayWrapper.addChild(indicator);
 			this.indicators[id] = indicator;
-			if(this.baobabs[id]!=null){
+			if(this.baobabs[id]!=null){ //If the baobab eists we wait till it finishes
 				this.baobabs[id];
 				indicator.addEventListener(Event.COMPLETE, this.onIndicatorAnimationComplete(id));
 			}else{
-				indicator.gotoAndPlay(80);
+				indicator.gotoAndPlay(44); // pressed wrong button, so reset multiplier
+				resetMultiplier();
 			}
 			
 		}
@@ -188,10 +206,12 @@
 					this.overlayWrapper.removeChild(this.indicators[id]);
 					if(this.indicators[id].animationComplete && this.baobabs[id]!=null){
 						this.removeBaobab(id);
+					} else if (this.baobabs[id]!=null) {
+						resetMultiplier();
 					}
 				}else if(this.baobabs[id]!=null){
 					this.removeBaobab(id);
-				}
+				} 
 				this.indicators[id]=null;
 			}
 		}
@@ -201,6 +221,10 @@
 			if(this.baobabs[id]!=null){
 				this.loader.baobabPop.play();
 				//this.gameWrapper.removeChild(this.baobabs[id]);
+				incrementScore(id);
+				if (this.tonextmult == 0) {
+					incrementMult();
+				}
 				this.baobabs[id].deplant();
 				this.baobabs[id]= null;
 				this.freePositions++;
