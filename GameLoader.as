@@ -114,14 +114,22 @@
 		
 		public function onFileLoadComplete(evt : Event){
 			var data : Array = String(this.loader.data).split("\n");
-			var zbuf : Array = new Array();
-			this.baobabZBuffer = new Object();
+			
 			this.baobabPositions = new Vector.<Coordinate>();
 			for each(var line in data){
 				var coordinates : Array = String(line).split(",");
 				this.baobabPositions.push(new Coordinate(Number(coordinates[0]),Number(coordinates[1])));
 			}
-			trace(this.baobabPositions);
+			this.loadZBuffer();
+			
+			readHiscores();
+			this.getReady(2);
+			
+		}
+		
+		public function loadZBuffer(){
+			var zbuf : Array = new Array();
+			this.baobabZBuffer = new Object();
 			for(var i=0;i<this.baobabPositions.length;i++){
 				zbuf.push({key:i,val:this.baobabPositions[i].y});
 			}
@@ -129,14 +137,7 @@
 			
 			for(var i=0;i<zbuf.length;i++){
 				baobabZBuffer[zbuf[i].key] = i;
-				trace(i);
 			}
-
-			
-			
-			readHiscores();
-			this.getReady(2);
-			
 		}
 		
 		private function getReady (code : Number) : void{

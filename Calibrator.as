@@ -48,6 +48,8 @@
 			this.removeEventListener(Event.ENTER_FRAME, this.updateCoord);
 			this.coordTxt.text = this.hotkey;
 			this.loader.baobabPositions[this.coordId] = new Coordinate(this.x, this.y);
+			this.loader.loadZBuffer();
+			this.loader.handler.updateBaobabPositions();
 		}
 		
 		public function updateCoord(e:Event):void{

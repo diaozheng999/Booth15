@@ -16,12 +16,16 @@
 		private var overlay : Overlay;
 		private var overlayWrapper : MovieClip;
 		private var gameWrapper : MovieClip;
+		private var scoreSprite : Score;
+		private var multSprite : Score;
 
-		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip) {
+		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip, sc:Score, mt:Score) {
 			// constructor code
 			this.stage = stage;
 			this.overlayWrapper = or;
 			this.gameWrapper = gr;
+			this.scoreSprite = sc;
+			this.multSprite = mt;
 			
 		}
 		
@@ -98,12 +102,17 @@
 			this.timer.start();
 			this.score = 0;
 			this.multiplier = 1;
+			this.scoreSprite.updateScore(this.score);
+			this.multSprite.updateScore(this.multiplier," x");
 			this.tonextmult = 5;
 			this.playerName = "Hello";
 			trace("Player name is..", this.playerName);
 			this.freePositions = this.loader.baobabPositions.length;
 			this.concurrent = 1;
 			
+			for(var i=0;i<this.loader.baobabPositions.length;i++){
+				this.gameWrapper.addChild(new MovieClip());
+			}
 			
 			this.baobabs = new Vector.<Baobab>();
 			this.indicators = new Vector.<Indicator>();
@@ -119,6 +128,12 @@
 		
 		public function onKeyPress(e:KeyboardEvent){
 			this.overlay.handleKeyDown(e);
+			trace(e.keyCode);
+			if(e.keyCode==38){
+				this.incrementMult();
+			}else if(e.keyCode==40){
+				this.resetMultiplier();
+			}
 		}
 		
 		public function onKeyRelease(e:KeyboardEvent){
@@ -147,21 +162,52 @@
 			baobab.x = pos.x;
 			baobab.y = pos.y;
 			this.baobabs[bpos] = baobab;
-			this.gameWrapper.addChildAt(baobab, this.loader.baobabZBuffer[pos]);
+			trace(this.loader.baobabZBuffer[bpos]);
+			this.gameWrapper.removeChildAt(this.loader.baobabZBuffer[bpos]);
+			this.gameWrapper.addChildAt(baobab, this.loader.baobabZBuffer[bpos]);
 			this.freePositions--;
+		}
+		
+		public function updateBaobabPositions(){
+			for(var i=0;i<this.loader.baobabPositions.length;i++){
+				if (this.baobabs[i]!=null){
+					this.gameWrapper.removeChild(this.baobabs[i]);
+				}
+			}
+			
+			while(this.gameWrapper.numChildren<this.loader.baobabPositions.length){
+				this.gameWrapper.addChild(new MovieClip());
+			}
+			for(var i=0;i<this.loader.baobabPositions.length;i++){
+				if(this.baobabs[i]!=null){
+					trace(this.loader.baobabZBuffer[i]);
+					this.gameWrapper.removeChildAt(this.loader.baobabZBuffer[i]);
+					this.gameWrapper.addChildAt(this.baobabs[i], this.loader.baobabZBuffer[i]);
+					
+					var pos:Coordinate = this.loader.baobabPositions[i];
+					this.baobabs[i].x = pos.x;
+					this.baobabs[i].y = pos.y;
+				}
+			}
 		}
 		
 		public function incrementScore(id : int) {
 			var value: int = int (1 +(25 - this.baobabs[id].currentFrame) / 5 );
 			this.score = this.score+ value * this.multiplier;
+			this.tonextmult--;
+			trace(this.score, this.tonextmult);
+			this.scoreSprite.updateScore(this.score);
 		}
 		public function incrementMult() {
 			this.multiplier++;
-			this.tonextmult =5;
+			this.multSprite.updateScore(this.multiplier, " x");
+			this.tonextmult = 5;
 		}
 		
 		public function resetMultiplier() {
 			this.multiplier = 1;
+			this.multSprite.updateScore(this.multiplier, " x");
+			this.tonextmult = 5;
 		}
 		
 		public function onTimerComplete(e:TimerEvent):void{
@@ -226,6 +272,7 @@
 					incrementMult();
 				}
 				this.baobabs[id].deplant();
+				this.gameWrapper.addChildAt(new MovieClip(), this.loader.baobabZBuffer[id]);
 				this.baobabs[id]= null;
 				this.freePositions++;
 			}

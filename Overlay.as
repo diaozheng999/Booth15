@@ -30,7 +30,6 @@
 		}
 		
 		public function handleKeyDown(e:KeyboardEvent):void{
-			trace("keydown!!!");
 			if(this.activated){
 				for(var i=0;i<this.inputLength;i++){
 					if(e.charCode == this.loader.keyboardEmulators.charCodeAt(i) && !this.activeSet.hasOwnProperty(i)){
@@ -43,7 +42,6 @@
 		}
 		
 		public function handleKeyUp(e:KeyboardEvent):void{
-			trace("keyup!!!");
 			if(e.keyCode==86 && e.ctrlKey){
 				if(this.activated){
 					this.deactivate();
