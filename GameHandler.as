@@ -158,11 +158,12 @@
 			var pos : Coordinate = this.loader.baobabPositions[bpos];
 			
 			this.loader.baobabSpawn.play();
-			var baobab : Baobab = new Baobab(25000);
+			var baobab : Baobab = new Baobab(25000, this.loader.baobabZBuffer[bpos]);
 			baobab.x = pos.x;
 			baobab.y = pos.y;
 			this.baobabs[bpos] = baobab;
 			trace(this.loader.baobabZBuffer[bpos]);
+			trace(this.gameWrapper.numChildren);
 			this.gameWrapper.removeChildAt(this.loader.baobabZBuffer[bpos]);
 			this.gameWrapper.addChildAt(baobab, this.loader.baobabZBuffer[bpos]);
 			this.freePositions--;
@@ -202,6 +203,25 @@
 			this.multiplier++;
 			this.multSprite.updateScore(this.multiplier, " x");
 			this.tonextmult = 5;
+			switch(this.multiplier){
+				case 5:
+					this.overlayWrapper.addChild(new Compliment(Compliment.GOOD));
+					break;
+				case 10:
+					this.overlayWrapper.addChild(new Compliment(Compliment.EXCELLENT));
+					break;
+				case 15:
+					this.overlayWrapper.addChild(new Compliment(Compliment.AWESOME));
+					break;
+				case 20:
+					this.overlayWrapper.addChild(new Compliment(Compliment.SPECTACULAR));
+					break;
+				case 25:
+					this.overlayWrapper.addChild(new Compliment(Compliment.EXTRAODINARY));
+					break;
+				case 30:
+					this.overlayWrapper.addChild(new Compliment(Compliment.UNBELIEVABLE));
+			}
 		}
 		
 		public function resetMultiplier() {
@@ -272,15 +292,18 @@
 					incrementMult();
 				}
 				this.baobabs[id].deplant();
-				this.gameWrapper.addChildAt(new MovieClip(), this.loader.baobabZBuffer[id]);
 				this.baobabs[id]= null;
 				this.freePositions++;
 			}
 		}
 		
 		public function gameOver(){			
-			trace("Die liao lah!");
-			this.loader.writeHiscores();
+			//remove all gameplay handlers
+			
+			//remove all baobabs
+			while(this.gameWrapper.numChildren>0){
+				this.gameWrapper.removeChildAt(0);
+			}
 			
 		}
 	}

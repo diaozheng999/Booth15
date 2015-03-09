@@ -9,14 +9,20 @@
 		private var lifetime : int;
 		private var birth : int;
 		public var harvestable : Boolean;
+		public var zid : int;
 		
-		public function Baobab(lifetime : int) {
+		public function Baobab(lifetime : int, depth:int) {
 			// constructor code
 			this.lifetime = lifetime;
 			this.addEventListener(Event.ENTER_FRAME, this.onEnterFrame);
 			this.birth = (new Date()).time;
 			this.harvestable = true;
+			this.zid = depth;
 			
+		}
+		
+		public function updateDepth(depth:int){
+			this.zid = depth;
 		}
 		
 		public function onEnterFrame(e:Event){
