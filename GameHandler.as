@@ -7,6 +7,7 @@
 	import flash.events.KeyboardEvent;
 	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
+	import flash.display.DisplayObject;
 	
 	public class GameHandler {
 		
@@ -18,6 +19,7 @@
 		private var gameWrapper : MovieClip;
 		private var scoreSprite : Score;
 		private var multSprite : Score;
+		
 
 		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip, sc:Score, mt:Score) {
 			// constructor code
@@ -74,6 +76,7 @@
 		public var baobabs : Vector.<Baobab>;
 		public var indicators : Vector.<Indicator>;
 		public var freePositions : int;
+		public var isRunning : Boolean = false;
 		
 		public function getSpawnDelta(level:int):int{
 
@@ -106,13 +109,21 @@
 			this.multSprite.updateScore(this.multiplier," x");
 			this.tonextmult = 5;
 			this.playerName = "Hello";
+			this.isRunning = true;
 			trace("Player name is..", this.playerName);
 			this.freePositions = this.loader.baobabPositions.length;
 			this.concurrent = 1;
 			
 			for(var i=0;i<this.loader.baobabPositions.length;i++){
-				this.gameWrapper.addChild(new MovieClip());
+				var indicator:MovieClip = new MovieClip();
+				indicator.x = 0;
+				indicator.y = 0;
+				indicator.name = "_CAP"+i;
+				this.gameWrapper.addChild(indicator);
 			}
+			
+			trace("Hello!");
+			trace(this.gameWrapper.numChildren);
 			
 			this.baobabs = new Vector.<Baobab>();
 			this.indicators = new Vector.<Indicator>();
@@ -145,6 +156,7 @@
 		}
 		
 		public function onTimerFired(e:TimerEvent):void{
+			if(!this.isRunning) return;
 			trace("Planting baobab.", this.timer.currentCount);
 			//var t:Baobab = new Baobab();
 			var bpos : int = this.random(0,this.loader.baobabPositions.length-1);
@@ -164,27 +176,24 @@
 			this.baobabs[bpos] = baobab;
 			trace(this.loader.baobabZBuffer[bpos]);
 			trace(this.gameWrapper.numChildren);
-			this.gameWrapper.removeChildAt(this.loader.baobabZBuffer[bpos]);
-			this.gameWrapper.addChildAt(baobab, this.loader.baobabZBuffer[bpos]);
+			var q = this.gameWrapper.getChildAt(this.loader.baobabZBuffer[bpos]);
+			q.addChild(baobab);
 			this.freePositions--;
 		}
 		
 		public function updateBaobabPositions(){
 			for(var i=0;i<this.loader.baobabPositions.length;i++){
 				if (this.baobabs[i]!=null){
-					this.gameWrapper.removeChild(this.baobabs[i]);
+					this.baobabs[i].parent.removeChild(this.baobabs[i]);
 				}
 			}
 			
-			while(this.gameWrapper.numChildren<this.loader.baobabPositions.length){
-				this.gameWrapper.addChild(new MovieClip());
-			}
 			for(var i=0;i<this.loader.baobabPositions.length;i++){
 				if(this.baobabs[i]!=null){
 					trace(this.loader.baobabZBuffer[i]);
-					this.gameWrapper.removeChildAt(this.loader.baobabZBuffer[i]);
-					this.gameWrapper.addChildAt(this.baobabs[i], this.loader.baobabZBuffer[i]);
-					
+					this.baobabs[i].updateDepth(this.loader.baobabZBuffer[i]);
+					var q = this.gameWrapper.getChildAt(this.loader.baobabZBuffer[i]);
+					q.addChild(this.baobabs[i]);
 					var pos:Coordinate = this.loader.baobabPositions[i];
 					this.baobabs[i].x = pos.x;
 					this.baobabs[i].y = pos.y;
@@ -206,22 +215,22 @@
 			this.tonextmult = 5;
 			switch(this.multiplier){
 				case 5:
-					this.overlayWrapper.addChild(new Compliment(Compliment.GOOD));
+					this.overlayWrapper.addChild(new Compliment(Compliment.GOOD, this.loader));
 					break;
 				case 10:
-					this.overlayWrapper.addChild(new Compliment(Compliment.EXCELLENT));
+					this.overlayWrapper.addChild(new Compliment(Compliment.EXCELLENT, this.loader));
 					break;
 				case 15:
-					this.overlayWrapper.addChild(new Compliment(Compliment.AWESOME));
+					this.overlayWrapper.addChild(new Compliment(Compliment.AWESOME, this.loader));
 					break;
 				case 20:
-					this.overlayWrapper.addChild(new Compliment(Compliment.SPECTACULAR));
+					this.overlayWrapper.addChild(new Compliment(Compliment.SPECTACULAR, this.loader));
 					break;
 				case 25:
-					this.overlayWrapper.addChild(new Compliment(Compliment.EXTRAODINARY));
+					this.overlayWrapper.addChild(new Compliment(Compliment.EXTRAODINARY, this.loader));
 					break;
 				case 30:
-					this.overlayWrapper.addChild(new Compliment(Compliment.UNBELIEVABLE));
+					this.overlayWrapper.addChild(new Compliment(Compliment.UNBELIEVABLE, this.loader));
 			}
 		}
 		
@@ -233,6 +242,7 @@
 		
 		public function onTimerComplete(e:TimerEvent):void{
 			trace("Done.");
+			if(!this.isRunning) return;
 			this.level++;
 			this.timer.removeEventListener(TimerEvent.TIMER, this.onTimerFired);
 			this.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
@@ -298,9 +308,13 @@
 			}
 		}
 		
-		public function gameOver(){			
+		public function gameOver(){	
+			trace("GAME OVER!");
+			1/0;
+			this.isRunning = false;
 			//remove all gameplay handlers
-			
+			this.timer.removeEventListener(TimerEvent.TIMER, this.onTimerFired);
+			this.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
 			//remove all baobabs
 			while(this.gameWrapper.numChildren>0){
 				this.gameWrapper.removeChildAt(0);

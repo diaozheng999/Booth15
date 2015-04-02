@@ -11,9 +11,10 @@
 		public static const SPECTACULAR:int = 4;
 		public static const EXTRAODINARY:int = 5;
 		public static const UNBELIEVABLE:int = 6;
-		public function Compliment(compl:int) {
+		public function Compliment(compl:int, l:GameLoader) {
 			// constructor code
 			this.compliment.gotoAndStop(compl);
+			l.compliments[compl].play();
 		}
 	}
 	

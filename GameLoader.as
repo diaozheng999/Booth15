@@ -27,6 +27,7 @@
 		public var baobabSpawn : Sound;
 		public var baobabPop : Sound;
 		
+		public var compliments : Vector.<Sound>;
 		
 		private var bgLooper : SoundChannel;
 	
@@ -51,6 +52,30 @@
 			this.baobabSpawn.load(new URLRequest("audio/splat.mp3"));
 			this.baobabPop = new Sound();
 			this.baobabPop.load(new URLRequest("audio/pop.mp3"));
+			/*
+					public static const GOOD:int = 1;
+		public static const EXCELLENT:int = 2;
+		public static const AWESOME:int = 3;
+		public static const SPECTACULAR:int = 4;
+		public static const EXTRAODINARY:int = 5;
+		public static const UNBELIEVABLE:int = 6;
+		*/
+			var compliments = [
+				"audio/compliment_good.mp3",
+				"audio/compliment_excellent.mp3",
+				"audio/compliment_awesome.mp3",
+				"audio/compliment_spectacular.mp3",
+				"audio/compliment_extraordinary.mp3",
+				"audio/compliment_unbelievable.mp3"
+				];
+			
+			this.compliments = new Vector.<Sound>();
+			this.compliments.push(null);
+			for each (var c in compliments){
+				var q:Sound = new Sound();
+				q.load(new URLRequest(c));
+				this.compliments.push(q);
+			}
 		}
 		
 		private function looperComplete(e:Event){
