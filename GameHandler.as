@@ -149,6 +149,9 @@
 		
 		public function onKeyRelease(e:KeyboardEvent){
 			this.overlay.handleKeyUp(e);
+			if(e.keyCode == 32){
+				this.onTimerFired(null);
+			}
 		}
 		
 		public function random(min:int, max:int):int{
@@ -166,6 +169,7 @@
 				}
 			}else{
 				this.gameOver();
+				return;
 			}
 			var pos : Coordinate = this.loader.baobabPositions[bpos];
 			
@@ -312,9 +316,11 @@
 			trace("GAME OVER!");
 			1/0;
 			this.isRunning = false;
+			trace(this.isRunning)
 			//remove all gameplay handlers
 			this.timer.removeEventListener(TimerEvent.TIMER, this.onTimerFired);
 			this.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
+			this.timer.stop();
 			//remove all baobabs
 			while(this.gameWrapper.numChildren>0){
 				this.gameWrapper.removeChildAt(0);

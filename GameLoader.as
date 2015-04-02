@@ -42,7 +42,7 @@
 			trace("Loading hiscores...");
 			this.loader = new URLLoader();
 			this.loader.addEventListener(Event.COMPLETE, this.onFileLoadComplete);
-			this.loader.load(new URLRequest("baobabs.txt"));
+			this.loader.load(new URLRequest("baobabs2.txt"));
 			readHiscores();
 			this.bgMusic = new Sound();
 			this.bgMusic.load(new URLRequest("audio/bgm.mp3"));
@@ -156,7 +156,9 @@
 			this.baobabPositions = new Vector.<Coordinate>();
 			for each(var line in data){
 				var coordinates : Array = String(line).split(",");
-				this.baobabPositions.push(new Coordinate(Number(coordinates[0]),Number(coordinates[1])));
+				if(line!=""){
+					this.baobabPositions.push(new Coordinate(Number(coordinates[0]),Number(coordinates[1])));
+				}
 			}
 			this.loadZBuffer();
 			
