@@ -190,6 +190,7 @@
 					this.baobabs[i].y = pos.y;
 				}
 			}
+			this.loader.writeSpawnLocations();
 		}
 		
 		public function incrementScore(id : int) {

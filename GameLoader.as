@@ -62,6 +62,19 @@
 			this.getReady(1);
 		}
 		
+		public function writeSpawnLocations() : void {
+			var positiontext = "";
+			for each(var entry in this.baobabPositions){
+				positiontext = positiontext + entry.toString() + "\n";
+			}
+			// baobabs.txt is the backup file for the old locations.
+			var fileloc : String = File.applicationDirectory.resolvePath("baobabs2.txt").nativePath;
+			var file : File = new File(fileloc);
+			var stream : FileStream = new FileStream();
+			stream.open(file,FileMode.WRITE);
+			stream.writeUTFBytes(positiontext);
+			stream.close();
+		}
 
 		public function writeHiscores() : void {
 			var score = this.handler.score;
