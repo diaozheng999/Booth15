@@ -17,8 +17,10 @@
 		}
 		
 		public function toString():String{
-			return "("+x.toString()+", "+y.toString()+")";
+			return x.toString()+","+y.toString();
 		}
+		
+	
 
 	}
 	
