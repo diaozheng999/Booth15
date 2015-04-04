@@ -78,6 +78,8 @@
 		public var indicators : Vector.<Indicator>;
 		public var freePositions : int;
 		public var isRunning : Boolean = false;
+		public var isPaused : Boolean = false;
+		
 		
 		public function getSpawnDelta(level:int):int{
 
@@ -111,6 +113,7 @@
 			this.tonextmult = 5;
 			this.playerName = "Hello";
 			this.isRunning = true;
+			this.isPaused = false;
 			trace("Player name is..", this.playerName);
 			this.freePositions = this.loader.baobabPositions.length;
 			this.concurrent = 1;
@@ -156,6 +159,7 @@
 		}
 		
 		public function handleArduinoEvent(e:ArduinoInputEvent){
+			this.printBtn(e);
 			if(e.type==ArduinoInputEvent.BTN_ON){
 				this.onBaobabActuation(e.trigger);
 			}else{
@@ -310,7 +314,6 @@
 			trace("BAOBABBBB I HATE YOU!!!");
 			if(this.baobabs[id]!=null){
 				this.loader.baobabPop.play();
-				//this.gameWrapper.removeChild(this.baobabs[id]);
 				incrementScore(id);
 				if (this.tonextmult == 0) {
 					incrementMult();

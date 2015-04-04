@@ -5,7 +5,7 @@
 	import flash.events.Event;
 	import flash.utils.Dictionary;
 
-	public class Arduino extends EventDispatcher{
+	public class Arduino extends EventDispatcher {
 		private var socket : Socket;
 		private var port : int;
 		private const INIT : int = 20;
@@ -19,6 +19,7 @@
 			this.socket = new Socket();
 			this.socket.addEventListener(Event.CONNECT, this.onConnect);
 			this.port = port;
+			this.sensorStrength = new Dictionary();
 		}
 		
 		public function connect():void{			
@@ -38,7 +39,7 @@
 
 		
 		private function processByte (byte : int) : void{
-			var sensor : int = byte / (2*this.CLUSTER);
+			var sensor : int = (byte - this.INIT)/ (2*this.CLUSTER);
 			if(byte%2==this.ON){
 				//button on
 				if(!this.sensorStrength.hasOwnProperty(sensor)){

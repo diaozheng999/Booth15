@@ -198,6 +198,7 @@
 		}
 		
 		public function onClose(e:Event){
+			if(this.serproxy==null) return;
 			this.serproxy.exit(true);
 		}
 		
