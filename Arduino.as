@@ -10,7 +10,7 @@
 		private var port : int;
 		private const INIT : int = 20;
 		private const CLUSTER : int = 2;
-		private const ON : int = 0;
+		private const ON : int = 1;
 		
 		private var sensorStrength : Dictionary;
 		

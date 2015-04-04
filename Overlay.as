@@ -41,6 +41,13 @@
 			}
 		}
 		
+		public function handleArduinoDown(e:ArduinoInputEvent):void{
+			if(!this.activeSet.hasOwnProperty(e.trigger)){
+				this.calibrators[e.trigger].actuate();
+				this.activeSet[e.trigger] = true;
+			}
+		}
+		
 		public function handleKeyUp(e:KeyboardEvent):void{
 			if(e.keyCode==86 && e.ctrlKey){
 				if(this.activated){
@@ -60,6 +67,11 @@
 					}
 				}
 			}
+		}
+		
+		public function handleArduinoUp(e:ArduinoInputEvent):void{
+			this.calibrators[e.trigger].deactuate();
+			delete this.activeSet[e.trigger];
 		}
 		
 		public function activate(){

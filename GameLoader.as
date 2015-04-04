@@ -32,7 +32,7 @@
 		
 		public var compliments : Vector.<Sound>;
 		
-		private var bgLooper : SoundChannel;
+		public var bgLooper : SoundChannel;
 		
 		private var serproxy : NativeProcess;
 	

@@ -19,21 +19,25 @@
 		private var gameWrapper : MovieClip;
 		private var scoreSprite : Score;
 		private var multSprite : Score;
+		private var pauseSprite : MovieClip;
+		private var loadComplete : Boolean = false;
+		private var mainTimeline;
 		
-
-		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip, sc:Score, mt:Score) {
+		public function GameHandler(stage:Stage, gr:MovieClip, or:MovieClip, sc:Score, mt:Score, ps:MovieClip, tl) {
 			// constructor code
 			this.stage = stage;
 			this.overlayWrapper = or;
 			this.gameWrapper = gr;
 			this.scoreSprite = sc;
 			this.multSprite = mt;
-			
+			this.pauseSprite = ps;
+			this.loader = new GameLoader(this);
+			this.mainTimeline = tl;
+			this.stage.nativeWindow.addEventListener(Event.CLOSING, this.loader.onClose);
 		}
 		
 		public function run() : void{
-			this.loader = new GameLoader(this);
-			this.stage.nativeWindow.addEventListener(Event.CLOSING, this.loader.onClose);
+			this.startGame();
 		}
 		
 		/*
@@ -58,7 +62,6 @@
 			this.arduino = this.loader.arduino;
 			this.overlay = new Overlay(this.loader);
 			this.overlayWrapper.addChild(this.overlay);
-			this.startGame();
 		}
 		
 		public function printBtn(e:ArduinoInputEvent):void{
@@ -100,12 +103,6 @@
 		
 		public function startGame():void{
 			//adds event listeners
-			this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.handleArduinoEvent);
-			this.arduino.addEventListener(ArduinoInputEvent.BTN_OFF, this.handleArduinoEvent);
-			this.timer = new Timer(this.getSpawnDelta(0), this.getSpawnCount(0));
-			this.timer.addEventListener(TimerEvent.TIMER, this.onTimerFired);
-			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
-			this.timer.start();
 			this.score = 0;
 			this.multiplier = 1;
 			this.scoreSprite.updateScore(this.score);
@@ -137,9 +134,28 @@
 				this.indicators.push(null);
 			}, this);
 			trace(this.baobabs);
+			this.spawnCountdown();
 			this.stage.addEventListener(KeyboardEvent.KEY_UP, this.onKeyRelease);
 			this.stage.addEventListener(KeyboardEvent.KEY_DOWN, this.onKeyPress);
 		}
+		
+		public function spawnCountdown(){
+			var q:Countdown = new Countdown();
+			q.x = this.stage.width/2;
+			q.y = this.stage.height/2;
+			this.overlayWrapper.addChild(q);
+			q.addEventListener(Event.COMPLETE, this.startTimer);
+		}
+		
+		public function startTimer(e:Event){
+			this.timer = new Timer(this.getSpawnDelta(0), this.getSpawnCount(0));
+			this.timer.addEventListener(TimerEvent.TIMER, this.onTimerFired);
+			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
+			this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.handleArduinoEvent);
+			this.arduino.addEventListener(ArduinoInputEvent.BTN_OFF, this.handleArduinoEvent);
+			this.timer.start();
+		}
+		
 		
 		public function onKeyPress(e:KeyboardEvent){
 			this.overlay.handleKeyDown(e);
@@ -155,6 +171,8 @@
 			this.overlay.handleKeyUp(e);
 			if(e.keyCode == 32){
 				this.onTimerFired(null);
+			}else if(e.keyCode==80 && e.ctrlKey){
+				this.togglePause();
 			}
 		}
 		
@@ -162,7 +180,9 @@
 			this.printBtn(e);
 			if(e.type==ArduinoInputEvent.BTN_ON){
 				this.onBaobabActuation(e.trigger);
+				this.overlay.handleArduinoDown(e);
 			}else{
+				this.overlay.handleArduinoUp(e);
 				this.onBaobabDeactuation(e.trigger);
 			}
 		}
@@ -269,6 +289,31 @@
 			this.timer.start();
 		}
 		
+		
+		public function togglePause(){
+			if(!this.isRunning) return;
+			if(this.isPaused){
+				this.isPaused = false;
+				this.pauseSprite.visible = false;
+				this.spawnCountdown();
+				for each (var baobab in this.baobabs){
+					if(baobab!=null) baobab.unpause();
+				}
+			}else{
+				this.isPaused = true;
+				this.timer.removeEventListener(TimerEvent.TIMER, this.onTimerFired);
+				this.timer.removeEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);				
+				this.arduino.removeEventListener(ArduinoInputEvent.BTN_ON, this.handleArduinoEvent);
+				this.arduino.removeEventListener(ArduinoInputEvent.BTN_OFF, this.handleArduinoEvent);
+				this.pauseSprite.visible = true;
+				
+				for each (var baobab in this.baobabs){
+					if(baobab!=null) baobab.pause();
+				}
+			}
+			
+		}
+		
 		public function onBaobabActuation(id:int){
 			var indicator:Indicator = new Indicator();
 			var pos = this.loader.baobabPositions[id];
@@ -326,7 +371,6 @@
 		
 		public function gameOver(){	
 			trace("GAME OVER!");
-			1/0;
 			this.isRunning = false;
 			trace(this.isRunning)
 			//remove all gameplay handlers
@@ -337,7 +381,14 @@
 			while(this.gameWrapper.numChildren>0){
 				this.gameWrapper.removeChildAt(0);
 			}
-			
+						
+			this.arduino.removeEventListener(ArduinoInputEvent.BTN_ON, this.handleArduinoEvent);
+			this.arduino.removeEventListener(ArduinoInputEvent.BTN_OFF, this.handleArduinoEvent);
+			var q:MovieClip = new TransitionSprite();
+			this.overlayWrapper.addChild(q);
+			this.loader.bgLooper.stop();
+			var p = this;
+			q.addEventListener(Event.COMPLETE, function(e){p.mainTimeline.gotoAndStop(5)});
 		}
 	}
 }
