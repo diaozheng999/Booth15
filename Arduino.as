@@ -3,10 +3,17 @@
 	import flash.events.ProgressEvent;
 	import flash.events.EventDispatcher;
 	import flash.events.Event;
+	import flash.utils.Dictionary;
 
 	public class Arduino extends EventDispatcher{
 		private var socket : Socket;
 		private var port : int;
+		private const INIT : int = 20;
+		private const CLUSTER : int = 2;
+		private const ON : int = 0;
+		
+		private var sensorStrength : Dictionary;
+		
 		public function Arduino (port : int) {
 			// constructor code
 			this.socket = new Socket();
@@ -31,11 +38,26 @@
 
 		
 		private function processByte (byte : int) : void{
-			var t : String = (byte % 2==0) ? ArduinoInputEvent.BTN_ON : ArduinoInputEvent.BTN_OFF;
-			var n : int = byte / 2;
-			var e : ArduinoInputEvent = new ArduinoInputEvent(t, n);
-			trace (e);
-			this.dispatchEvent(e);
+			var sensor : int = byte / (2*this.CLUSTER);
+			if(byte%2==this.ON){
+				//button on
+				if(!this.sensorStrength.hasOwnProperty(sensor)){
+					this.sensorStrength[sensor] = 1;
+					this.dispatchEvent(new ArduinoInputEvent(ArduinoInputEvent.BTN_ON, sensor));
+				}else{
+					this.sensorStrength[sensor]++;
+				}
+			}else{
+				//button off
+				if(this.sensorStrength.hasOwnProperty(sensor)){
+					this.sensorStrength[sensor]--;
+					if(this.sensorStrength[sensor]==0){
+						delete this.sensorStrength[sensor];
+						this.dispatchEvent(new ArduinoInputEvent(ArduinoInputEvent.BTN_OFF, sensor));
+					}
+				}
+			}
+
 		}
 	}
 }

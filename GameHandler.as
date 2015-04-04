@@ -33,6 +33,7 @@
 		
 		public function run() : void{
 			this.loader = new GameLoader(this);
+			this.stage.nativeWindow.addEventListener(Event.CLOSING, this.loader.onClose);
 		}
 		
 		/*
@@ -97,8 +98,8 @@
 		
 		public function startGame():void{
 			//adds event listeners
-			this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.printBtn);
-			this.arduino.addEventListener(ArduinoInputEvent.BTN_OFF, this.printBtn);
+			this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, this.handleArduinoEvent);
+			this.arduino.addEventListener(ArduinoInputEvent.BTN_OFF, this.handleArduinoEvent);
 			this.timer = new Timer(this.getSpawnDelta(0), this.getSpawnCount(0));
 			this.timer.addEventListener(TimerEvent.TIMER, this.onTimerFired);
 			this.timer.addEventListener(TimerEvent.TIMER_COMPLETE, this.onTimerComplete);
@@ -151,6 +152,14 @@
 			this.overlay.handleKeyUp(e);
 			if(e.keyCode == 32){
 				this.onTimerFired(null);
+			}
+		}
+		
+		public function handleArduinoEvent(e:ArduinoInputEvent){
+			if(e.type==ArduinoInputEvent.BTN_ON){
+				this.onBaobabActuation(e.trigger);
+			}else{
+				this.onBaobabDeactuation(e.trigger);
 			}
 		}
 		

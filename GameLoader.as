@@ -8,6 +8,9 @@
 	import flash.utils.Dictionary;
 	import flash.media.Sound;
 	import flash.media.SoundChannel;
+	import flash.desktop.NativeProcess;
+	import flash.desktop.NativeProcessStartupInfo;
+	import flash.events.NativeProcessExitEvent;
 	
 	public class GameLoader {
 		
@@ -30,8 +33,15 @@
 		public var compliments : Vector.<Sound>;
 		
 		private var bgLooper : SoundChannel;
+		
+		private var serproxy : NativeProcess;
 	
 		public function GameLoader(handler : GameHandler) {
+			this.serproxy = new NativeProcess();
+			var s:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+			s.workingDirectory = File.applicationDirectory;
+			s.executable = File.applicationDirectory.resolvePath("serproxy.exe");
+			this.serproxy.start(s);
 			// constructor code
 			this.handler = handler;
 			trace("Loading arduino...");
@@ -185,6 +195,10 @@
 			if (this.readiness==3){
 				this.handler.onLoaderComplete();
 			}
+		}
+		
+		public function onClose(e:Event){
+			this.serproxy.exit(true);
 		}
 		
 
