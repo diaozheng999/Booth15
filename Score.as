@@ -13,6 +13,7 @@
 		}
 		
 		public function updateScore(sc:uint, suffix:String = ""){
+			trace(this.name+": update score to "+sc.toString()+suffix);
 			this.score.scoreTxt.text = sc.toString()+suffix;
 			this.gotoAndPlay(1);
 		}

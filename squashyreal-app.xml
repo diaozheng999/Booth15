@@ -18,7 +18,7 @@
 -->
 <application xmlns="http://ns.adobe.com/air/application/3.6">
   <id>edu.cmu.ssa.squashy</id>
-  <versionNumber>1.0</versionNumber>
+  <versionNumber>1.1</versionNumber>
   <filename>squashyreal</filename>
   <description/>
   <name>squashyreal</name>
@@ -35,5 +35,5 @@
   <icon/>
   <customUpdateUI>false</customUpdateUI>
   <allowBrowserInvocation>false</allowBrowserInvocation>
-  <supportedProfiles>extendedDesktop</supportedProfiles>
+  <supportedProfiles>extendedDesktop </supportedProfiles>
 </application>

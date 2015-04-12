@@ -8,6 +8,7 @@
 	import flash.ui.Keyboard;
 	import flash.utils.Dictionary;
 	import flash.display.DisplayObject;
+	import net.eriksjodin.arduino.events.ArduinoEvent;
 	
 	public class GameHandler {
 		
@@ -36,6 +37,19 @@
 			this.stage.nativeWindow.addEventListener(Event.CLOSING, this.loader.onClose);
 		}
 		
+		
+		public function updateSprites(gr:MovieClip=null, or:MovieClip=null,sc:Score=null,mt:Score=null, ps:MovieClip=null){
+			if(gr!=null) this.gameWrapper = gr;
+			if(or!=null) this.overlayWrapper = or;
+			if(sc!=null) this.scoreSprite = sc;
+			if(mt!=null) this.multSprite = mt;
+			if(ps!=null) this.pauseSprite = ps;
+			trace("update sprites: "+this.scoreSprite.name);
+			trace("update sprites orig: "+sc);
+			trace("update sprites orig: "+mt);
+			
+		}
+		
 		public function run() : void{
 			this.startGame();
 		}
@@ -62,6 +76,7 @@
 			this.arduino = this.loader.arduino;
 			this.overlay = new Overlay(this.loader);
 			this.overlayWrapper.addChild(this.overlay);
+			this.loadComplete = true;
 		}
 		
 		public function printBtn(e:ArduinoInputEvent):void{
@@ -83,6 +98,9 @@
 		public var isRunning : Boolean = false;
 		public var isPaused : Boolean = false;
 		
+		public var startScreen : MovieClip;
+		public var stars:Vector.<BeginSprite>;
+		
 		
 		public function getSpawnDelta(level:int):int{
 
@@ -100,8 +118,53 @@
 			return 3 + int( 0.5 * level);
 		}
 		
+		public function drawStartScreen(){
+			if(!this.loadComplete){
+				var t:Timer = new Timer(100);
+				var me = this;
+				t.addEventListener(TimerEvent.TIMER, function(e){me.drawStartScreen();e.target.stop()});
+				t.start();
+				return;
+			}
+			this.startScreen = new MovieClip();
+			this.stars = new Vector.<BeginSprite>();
+			for(var i=0;i<this.loader.baobabPositions.length;i++){
+				var star:BeginSprite = new BeginSprite();
+				this.loader.baobabPositions[i].applyTo(star);
+				this.startScreen.addChild(star);
+				this.stars.push(star);
+			}
+			this.overlayWrapper.addChild(this.startScreen);
+			this.stage.addEventListener(KeyboardEvent.KEY_UP, startGameKeyboardHandler);
+			this.arduino.addEventListener(ArduinoInputEvent.BTN_OFF, startGameArduinoUpHandler);
+			this.arduino.addEventListener(ArduinoInputEvent.BTN_ON, startGameArduinoDownHandler);
+		}
 		
+		public function startGameArduinoDownHandler(e:ArduinoInputEvent){
+			this.stars[e.trigger].gotoAndPlay(82);
+		}
+		
+		public function startGameArduinoUpHandler(e:ArduinoInputEvent){
+			this.onStartGame();
+		}
+		
+		public function startGameKeyboardHandler(e:KeyboardEvent){
+			if(e.keyCode==Keyboard.ENTER){
+				this.onStartGame();
+			}
+		}
+		
+		public function onStartGame(){
+			this.overlayWrapper.removeChild(this.startScreen);
+			this.mainTimeline.gotoAndPlay(3);
+			this.stage.removeEventListener(KeyboardEvent.KEY_UP, startGameKeyboardHandler);
+			this.arduino.removeEventListener(ArduinoInputEvent.BTN_OFF, startGameArduinoUpHandler);
+			this.arduino.removeEventListener(ArduinoInputEvent.BTN_ON, startGameArduinoDownHandler);
+		}
+			
+			
 		public function startGame():void{
+			trace("Starting game!");
 			//adds event listeners
 			this.score = 0;
 			this.multiplier = 1;
@@ -386,9 +449,8 @@
 			this.arduino.removeEventListener(ArduinoInputEvent.BTN_OFF, this.handleArduinoEvent);
 			var q:MovieClip = new TransitionSprite();
 			this.overlayWrapper.addChild(q);
-			this.loader.bgLooper.stop();
 			var p = this;
-			q.addEventListener(Event.COMPLETE, function(e){p.mainTimeline.gotoAndStop(5)});
+			q.addEventListener(Event.COMPLETE, function(e){p.mainTimeline.gotoAndStop(6)});
 		}
 	}
 }
