@@ -133,6 +133,10 @@
 				this.loader.baobabPositions[i].applyTo(star);
 				this.startScreen.addChild(star);
 				this.stars.push(star);
+				
+				if(star.y>=592){
+					star.visible = false;
+				}
 			}
 			this.overlayWrapper.addChild(this.startScreen);
 			this.stage.addEventListener(KeyboardEvent.KEY_UP, startGameKeyboardHandler);
@@ -156,7 +160,7 @@
 		
 		public function onStartGame(){
 			this.overlayWrapper.removeChild(this.startScreen);
-			this.mainTimeline.gotoAndPlay(3);
+			this.mainTimeline.gotoAndStop(11);
 			this.stage.removeEventListener(KeyboardEvent.KEY_UP, startGameKeyboardHandler);
 			this.arduino.removeEventListener(ArduinoInputEvent.BTN_OFF, startGameArduinoUpHandler);
 			this.arduino.removeEventListener(ArduinoInputEvent.BTN_ON, startGameArduinoDownHandler);
@@ -450,7 +454,7 @@
 			var q:MovieClip = new TransitionSprite();
 			this.overlayWrapper.addChild(q);
 			var p = this;
-			q.addEventListener(Event.COMPLETE, function(e){p.mainTimeline.gotoAndStop(6)});
+			q.addEventListener(Event.COMPLETE, function(e){p.mainTimeline.gotoAndPlay(6)});
 		}
 	}
 }

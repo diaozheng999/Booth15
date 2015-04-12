@@ -18,7 +18,7 @@
 -->
 <application xmlns="http://ns.adobe.com/air/application/3.6">
   <id>edu.cmu.ssa.squashy</id>
-  <versionNumber>1.1</versionNumber>
+  <versionNumber>1.2</versionNumber>
   <filename>squashyreal</filename>
   <description/>
   <name>squashyreal</name>

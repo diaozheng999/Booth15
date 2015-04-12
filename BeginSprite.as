@@ -16,7 +16,7 @@
 			this.scaleX = sc;
 			this.scaleY = sc;
 			trace(this.scaleX, this.scaleY);
-			
+			this.gotoAndPlay(uint(this.random(0,80)));
 		}
 		
 		public function random(min:Number, max:Number):Number{
