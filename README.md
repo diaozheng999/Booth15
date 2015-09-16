@@ -19,4 +19,4 @@ SSA members:
 Open source software adopted: <br>
 serproxy
 
-A video of the game in action can be found here :
+A video of the game in action can be found here : https://www.youtube.com/watch?v=plE6PUnILUo
