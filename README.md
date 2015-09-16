@@ -11,10 +11,10 @@ To accomplish this project, we wrote most of our software in *__Actionscript 3.0
 
 SSA members:
 
-Matthew Lee for getting most of the hardware done <br>
-Grace Guo and Lucy Yu for most of the graphics <br>
-Austin Davis for lending his voice<br>
-Simon Diao and Bryan Lee for most of the software code <br>
+-Matthew Lee for getting most of the hardware done <br>
+-Grace Guo and Lucy Yu for most of the graphics <br>
+-Austin Davis for lending his voice<br>
+-Simon Diao and Bryan Lee for most of the software code <br>
 
 Open source software adopted: <br>
 serproxy
